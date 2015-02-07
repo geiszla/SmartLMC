@@ -60,10 +60,10 @@
             this.inputTitle = new System.Windows.Forms.Label();
             this.inputBox = new System.Windows.Forms.NumericUpDown();
             this.registersGroup = new System.Windows.Forms.GroupBox();
-            this.memAddressBox = new System.Windows.Forms.TextBox();
-            this.memDataBox = new System.Windows.Forms.TextBox();
-            this.memDataTitle = new System.Windows.Forms.Label();
-            this.memAddressTitle = new System.Windows.Forms.Label();
+            this.addressBox = new System.Windows.Forms.TextBox();
+            this.instructionBox = new System.Windows.Forms.TextBox();
+            this.instructionTitle = new System.Windows.Forms.Label();
+            this.addressTitle = new System.Windows.Forms.Label();
             this.accumulatorBox = new System.Windows.Forms.TextBox();
             this.counterBox = new System.Windows.Forms.TextBox();
             this.counterLabel = new System.Windows.Forms.Label();
@@ -73,6 +73,8 @@
             this.targetColorBox = new System.Windows.Forms.TextBox();
             this.colorsGroup = new System.Windows.Forms.GroupBox();
             this.selectionColorBox = new System.Windows.Forms.TextBox();
+            this.helpStrip = new System.Windows.Forms.StatusStrip();
+            this.helpStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.memoryCommandGroup.SuspendLayout();
             this.branchingCommandGroup.SuspendLayout();
             this.ioCommandGroup.SuspendLayout();
@@ -86,6 +88,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.inputBox)).BeginInit();
             this.registersGroup.SuspendLayout();
             this.colorsGroup.SuspendLayout();
+            this.helpStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // memoryGroup
@@ -456,10 +459,10 @@
             // 
             // registersGroup
             // 
-            this.registersGroup.Controls.Add(this.memAddressBox);
-            this.registersGroup.Controls.Add(this.memDataBox);
-            this.registersGroup.Controls.Add(this.memDataTitle);
-            this.registersGroup.Controls.Add(this.memAddressTitle);
+            this.registersGroup.Controls.Add(this.addressBox);
+            this.registersGroup.Controls.Add(this.instructionBox);
+            this.registersGroup.Controls.Add(this.addressTitle);
+            this.registersGroup.Controls.Add(this.instructionTitle);
             this.registersGroup.Controls.Add(this.accumulatorBox);
             this.registersGroup.Controls.Add(this.counterBox);
             this.registersGroup.Controls.Add(this.counterLabel);
@@ -471,52 +474,52 @@
             this.registersGroup.TabStop = false;
             this.registersGroup.Text = "Registers";
             // 
-            // memAddressBox
+            // addressBox
             // 
-            this.memAddressBox.Location = new System.Drawing.Point(31, 96);
-            this.memAddressBox.Name = "memAddressBox";
-            this.memAddressBox.ReadOnly = true;
-            this.memAddressBox.Size = new System.Drawing.Size(66, 20);
-            this.memAddressBox.TabIndex = 7;
-            this.memAddressBox.Text = "00";
-            this.memAddressBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.addressBox.Location = new System.Drawing.Point(145, 89);
+            this.addressBox.Name = "addressBox";
+            this.addressBox.ReadOnly = true;
+            this.addressBox.Size = new System.Drawing.Size(86, 20);
+            this.addressBox.TabIndex = 7;
+            this.addressBox.Text = "00";
+            this.addressBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // memDataBox
+            // instructionBox
             // 
-            this.memDataBox.Location = new System.Drawing.Point(145, 96);
-            this.memDataBox.Name = "memDataBox";
-            this.memDataBox.ReadOnly = true;
-            this.memDataBox.Size = new System.Drawing.Size(86, 20);
-            this.memDataBox.TabIndex = 6;
-            this.memDataBox.Text = "000";
-            this.memDataBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.instructionBox.Location = new System.Drawing.Point(20, 89);
+            this.instructionBox.Name = "instructionBox";
+            this.instructionBox.ReadOnly = true;
+            this.instructionBox.Size = new System.Drawing.Size(83, 20);
+            this.instructionBox.TabIndex = 6;
+            this.instructionBox.Text = "0";
+            this.instructionBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // memDataTitle
+            // instructionTitle
             // 
-            this.memDataTitle.AutoSize = true;
-            this.memDataTitle.Location = new System.Drawing.Point(152, 80);
-            this.memDataTitle.Name = "memDataTitle";
-            this.memDataTitle.Size = new System.Drawing.Size(70, 13);
-            this.memDataTitle.TabIndex = 5;
-            this.memDataTitle.Text = "Memory Data";
+            this.instructionTitle.AutoSize = true;
+            this.instructionTitle.Location = new System.Drawing.Point(15, 73);
+            this.instructionTitle.Name = "instructionTitle";
+            this.instructionTitle.Size = new System.Drawing.Size(98, 13);
+            this.instructionTitle.TabIndex = 5;
+            this.instructionTitle.Text = "Instruction Register";
             // 
-            // memAddressTitle
+            // addressTitle
             // 
-            this.memAddressTitle.AutoSize = true;
-            this.memAddressTitle.Location = new System.Drawing.Point(23, 80);
-            this.memAddressTitle.Name = "memAddressTitle";
-            this.memAddressTitle.Size = new System.Drawing.Size(85, 13);
-            this.memAddressTitle.TabIndex = 4;
-            this.memAddressTitle.Text = "Memory Address";
+            this.addressTitle.AutoSize = true;
+            this.addressTitle.Location = new System.Drawing.Point(146, 73);
+            this.addressTitle.Name = "addressTitle";
+            this.addressTitle.Size = new System.Drawing.Size(87, 13);
+            this.addressTitle.TabIndex = 4;
+            this.addressTitle.Text = "Address Register";
             // 
             // accumulatorBox
             // 
-            this.accumulatorBox.Location = new System.Drawing.Point(31, 38);
+            this.accumulatorBox.Location = new System.Drawing.Point(20, 38);
             this.accumulatorBox.Name = "accumulatorBox";
             this.accumulatorBox.ReadOnly = true;
-            this.accumulatorBox.Size = new System.Drawing.Size(66, 20);
+            this.accumulatorBox.Size = new System.Drawing.Size(83, 20);
             this.accumulatorBox.TabIndex = 3;
-            this.accumulatorBox.Text = "0";
+            this.accumulatorBox.Text = "000";
             this.accumulatorBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // counterBox
@@ -526,7 +529,7 @@
             this.counterBox.ReadOnly = true;
             this.counterBox.Size = new System.Drawing.Size(86, 20);
             this.counterBox.TabIndex = 2;
-            this.counterBox.Text = "0";
+            this.counterBox.Text = "00";
             this.counterBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // counterLabel
@@ -602,11 +605,30 @@
             this.selectionColorBox.Text = "Selection";
             this.selectionColorBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // helpStrip
+            // 
+            this.helpStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.helpStatusLabel});
+            this.helpStrip.Location = new System.Drawing.Point(0, 571);
+            this.helpStrip.Name = "helpStrip";
+            this.helpStrip.Size = new System.Drawing.Size(1194, 30);
+            this.helpStrip.TabIndex = 18;
+            this.helpStrip.Text = "helpStrip";
+            // 
+            // helpStatusLabel
+            // 
+            this.helpStatusLabel.Name = "helpStatusLabel";
+            this.helpStatusLabel.Padding = new System.Windows.Forms.Padding(10, 5, 0, 5);
+            this.helpStatusLabel.Size = new System.Drawing.Size(422, 25);
+            this.helpStatusLabel.Text = "1. Write in a code -> 2. Click compile -> 3. Select a step to get the details of " +
+    "it";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1194, 574);
+            this.ClientSize = new System.Drawing.Size(1194, 601);
+            this.Controls.Add(this.helpStrip);
             this.Controls.Add(this.colorsGroup);
             this.Controls.Add(this.programGroup);
             this.Controls.Add(this.sourceGroup);
@@ -635,7 +657,10 @@
             this.registersGroup.PerformLayout();
             this.colorsGroup.ResumeLayout(false);
             this.colorsGroup.PerformLayout();
+            this.helpStrip.ResumeLayout(false);
+            this.helpStrip.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -665,10 +690,10 @@
         private System.Windows.Forms.GroupBox registersGroup;
         private System.Windows.Forms.Label counterLabel;
         private System.Windows.Forms.Label accumulatorTitle;
-        private System.Windows.Forms.TextBox memAddressBox;
-        private System.Windows.Forms.TextBox memDataBox;
-        private System.Windows.Forms.Label memDataTitle;
-        private System.Windows.Forms.Label memAddressTitle;
+        private System.Windows.Forms.TextBox addressBox;
+        private System.Windows.Forms.TextBox instructionBox;
+        private System.Windows.Forms.Label instructionTitle;
+        private System.Windows.Forms.Label addressTitle;
         private System.Windows.Forms.TextBox accumulatorBox;
         private System.Windows.Forms.TextBox counterBox;
         private System.Windows.Forms.Button exampleButton;
@@ -686,6 +711,8 @@
         private System.Windows.Forms.TextBox targetColorBox;
         private System.Windows.Forms.GroupBox colorsGroup;
         private System.Windows.Forms.TextBox selectionColorBox;
+        private System.Windows.Forms.StatusStrip helpStrip;
+        private System.Windows.Forms.ToolStripStatusLabel helpStatusLabel;
     }
 }
 

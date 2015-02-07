@@ -67,10 +67,10 @@ namespace SmartLMC
 
         private void compileButton_Click(object sender, EventArgs e)
         {
-            accumulatorBox.Text = "0";
-            counterBox.Text = "0";
-            memAddressBox.Text = "00";
-            memDataBox.Text = "000";
+            accumulatorBox.Text = "000";
+            counterBox.Text = "00";
+            addressBox.Text = "00";
+            instructionBox.Text = "0";
             inputBox.Value = 0;
             outputBox.Text = "";
 
@@ -128,22 +128,25 @@ namespace SmartLMC
             int selectedIndex = stepsTable.CurrentRow.Index;
 
             applyMemory(selectedIndex);
-            accumulatorBox.Text = currCode.Steps[selectedIndex].Accumulator.ToString();
+            accumulatorBox.Text = currCode.Steps[selectedIndex].Accumulator.ToString("000");
             outputBox.Text = currCode.getOutput(selectedIndex);
-            counterBox.Text = selectedIndex.ToString();
 
             int lineNumber = currCode.Steps[selectedIndex].LineNumber;
 
+            counterBox.Text = lineNumber.ToString("00");
             if (Instruction.Instructions[currCode.Lines[lineNumber].Instruction] != "DAT")
             {
-                memAddressBox.Text = lineNumber.ToString("00");
-                memDataBox.Text = currCode.Memory[lineNumber].ToString("000");
+                MemoryAllocation currTarget = currCode.Lines[lineNumber].Target;
+                addressBox.Text = currTarget != null ? currCode.Lines[lineNumber].Target.Address.ToString("00") : "00";
+                instructionBox.Text = Math.Floor(currCode.getMemoryFromChanges(selectedIndex)[lineNumber] / 100.0).ToString();
             }
-            
+
             programTable.Rows[currCode.Steps[selectedIndex].LineNumber].Selected = true;
 
             highlightImportant(selectedIndex, false);
             changeSelectedLabel();
+
+            setHelpStrip(selectedIndex);
         }
 
         private void sendButton_Click(object sender, EventArgs e)
@@ -200,7 +203,7 @@ namespace SmartLMC
             }
 
             outputTable.Columns[0].Width = 25;
-            accumulatorBox.Text = currCode.Steps.Count != 0 ? currCode.Steps[currCode.Steps.Count - 1].Accumulator.ToString() : "0";
+            accumulatorBox.Text = currCode.Steps.Count != 0 ? currCode.Steps[currCode.Steps.Count - 1].Accumulator.ToString("000") : "000";
         }
 
         void applyMemory(int stepNumber)
@@ -402,6 +405,104 @@ namespace SmartLMC
                     programTable.Rows[i].DefaultCellStyle.BackColor = Color.LightGray;
                 }
             }
+        }
+
+        private void setHelpStrip(int selectedIndex)
+        {
+            Step currStep = currCode.Steps[selectedIndex];
+            Line currLine = currCode.Lines[currStep.LineNumber];
+            string currInstruction = Instruction.Instructions[currLine.Instruction];
+
+            int previousAccumulator = selectedIndex > 0 ? currCode.Steps[selectedIndex - 1].Accumulator : 0;
+
+            int currTarget = 0;
+            int targetMemoryValue = 0;
+            int previousMemoryValue = 0;
+            if (currLine.Target != null)
+            {
+                currTarget = currLine.Target.Address;
+                targetMemoryValue = currCode.getMemoryFromChanges(selectedIndex)[currTarget];
+                previousMemoryValue = currCode.Memory[currLine.Target.Address];
+            }
+
+            helpStatusLabel.Text = currInstruction + ": ";
+
+            if (currInstruction == "ADD")
+            {
+                helpStatusLabel.Text += "Takes the value \"" + targetMemoryValue.ToString("000")
+                    + "\" from memory with address \"" + currTarget.ToString("00") + "\" " + (currLine.Target.Name != null ? ("(label: " + currLine.Target.Name + ") ") : "")
+                    + "and adds it to the accumulator: " + previousAccumulator.ToString("000") + " + " + targetMemoryValue.ToString("000") + " => " + (previousAccumulator + targetMemoryValue).ToString("000");
+            }
+
+            else if (currInstruction == "SUB")
+            {
+                helpStatusLabel.Text += "Takes the value \"" + targetMemoryValue.ToString("000")
+                    + "\" from memory with address \"" + currTarget.ToString("00") + "\" " + (currLine.Target.Name != null ? ("(label: " + currLine.Target.Name + ") ") : "")
+                    + "and subtracts it from the accumulator: " + previousAccumulator.ToString("000") + " - " + targetMemoryValue.ToString("000") + " => " + (previousAccumulator - targetMemoryValue).ToString("000");
+            }
+
+            else if (currInstruction == "STA")
+            {
+                helpStatusLabel.Text += "Takes the value \"" + previousAccumulator.ToString("000")
+                    + "\" from the accumulator and stores it in the memory with address \"" + currTarget.ToString("00") + "\" " + (currLine.Target.Name != null ? ("(label: " + currLine.Target.Name + ") ") : "")
+                    + ": " + previousMemoryValue.ToString("000") + " => " + currStep.Accumulator.ToString("000");
+            }
+
+            else if (currInstruction == "LDA")
+            {
+                helpStatusLabel.Text += "Takes the value \"" + targetMemoryValue.ToString("000")
+                    + "\" from memory with address \"" + currTarget.ToString("00") + "\" " + (currLine.Target.Name != null ? ("(label: " + currLine.Target.Name + ") ") : "")
+                    + "and loads it into the accumulator: " + previousAccumulator.ToString("000") + " => " + targetMemoryValue.ToString("000");
+            }
+
+            else if (currInstruction == "BRA" || currInstruction == "BRZ" || currInstruction == "BRP")
+            {
+                string takenText = "";
+                if (currInstruction == "BRZ")
+                {
+                    helpStatusLabel.Text += "If the accumulator value \"" + currStep.Accumulator.ToString("000") + "\" is 000, s";
+                    takenText = (currStep.Accumulator == 0 ? "" : "not ") + "taken";
+                }
+
+                if (currInstruction == "BRP")
+                {
+                    helpStatusLabel.Text += "If the accumulator value \"" + currStep.Accumulator.ToString("000") + "\" is poitive or 000, s";
+                    takenText = (currStep.Accumulator >= 0 ? "" : "not ") + "taken";
+                }
+
+                else
+                {
+                    helpStatusLabel.Text += "S";
+                    
+                }
+
+                helpStatusLabel.Text += "ets the program counter to the target address \""+ currLine.Target.Address.ToString("00") + "\" "
+                    + "(jumps to the given line). -> "  + (currLine.Target.Address == currCode.Steps[selectedIndex + 1].LineNumber ? "taken" : "not taken");
+            }
+
+            else if (currInstruction == "INP")
+            {
+                helpStatusLabel.Text += "Asks the user for an input (" + currStep.Accumulator.ToString("000")
+                    + "), and loads it into the accumulator: " + previousAccumulator.ToString("000") + " => " + currStep.Accumulator.ToString("000");
+            }
+
+            else if (currInstruction == "OUT")
+            {
+                helpStatusLabel.Text += "Takes the value \"" + currStep.Accumulator.ToString("000") + "\" from the accumulator"
+                    + " and outputs it to the user.";
+            }
+
+            else if (currInstruction == "HLT")
+            {
+                helpStatusLabel.Text += "Terminates the program.";
+            }
+
+            else if (currInstruction == "DAT")
+            {
+                helpStatusLabel.Text += "Allocates the current memory box (with address \"" + currStep.LineNumber.ToString("00") + "\") for the label \"" + currLine.Name + "\".";
+            }
+
+            helpStrip.Refresh();
         }
         #endregion
     }
