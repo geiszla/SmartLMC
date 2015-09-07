@@ -7,7 +7,7 @@
 
         public MemoryAllocation()
         {
-            this.Address = -1;
+            Address = -1;
         }
     }
 }

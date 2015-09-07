@@ -17,7 +17,7 @@ namespace SmartLMC.SmartLMC
         public Code(string text)
         {
             string[] sourceText = text.Trim().Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            this.Text = new string[sourceText.Length][];
+            Text = new string[sourceText.Length][];
 
             for (int i = 0; i < sourceText.Length; i++)
             {
@@ -26,7 +26,7 @@ namespace SmartLMC.SmartLMC
                     Regex regex = new Regex(@"[ ]{2,}");
                     sourceText[i] = regex.Replace(sourceText[i], @" ").Trim();
 
-                    this.Text[i] = sourceText[i].Split(' ');
+                    Text[i] = sourceText[i].Split(' ');
                 }
             }
         }
@@ -34,19 +34,19 @@ namespace SmartLMC.SmartLMC
         #region Main Functions
         public bool Compile()
         {
-            this.Lines = new Line[this.Text.Length];
-            this.Steps = new List<Step>();
+            Lines = new Line[Text.Length];
+            Steps = new List<Step>();
 
-            for (int i = 0; i < this.Text.Length; i++)
+            for (int i = 0; i < Text.Length; i++)
             {
-                if (this.Text[i] != null)
+                if (Text[i] != null)
                 {
-                    this.Lines[i] = new Line(String.Join(" ", this.Text[i]).ToUpper());
+                    Lines[i] = new Line(string.Join(" ", Text[i]).ToUpper());
 
-                    Line currLine = evaluateLine(i, this.Text[i], 0);
+                    Line currLine = evaluateLine(i, Text[i], 0);
                     if (currLine != null)
                     {
-                        this.Lines[i] = currLine;
+                        Lines[i] = currLine;
                     }
 
                     else
@@ -70,37 +70,37 @@ namespace SmartLMC.SmartLMC
         public int Run(int startIndex)
         {
             int[] currMem = new int[100];
-            for (int i = startIndex; i < this.Lines.Length; i++)
+            for (int i = startIndex; i < Lines.Length; i++)
             {
                 Step currStep = new Step(i);
                 Steps.Add(currStep);
-                string currInstruction = SmartLMC.Instruction.Instructions[this.Lines[i].Instruction];
+                string currInstruction = Instruction.Instructions[Lines[i].Instruction];
 
-                int currAcc = currStep.Accumulator = (i != 0 ? this.Steps[this.Steps.Count - 2].Accumulator : 0);
+                int currAcc = currStep.Accumulator = (i != 0 ? Steps[Steps.Count - 2].Accumulator : 0);
                 if (currInstruction == "ADD")
                 {
-                    currStep.Accumulator = currAcc + getMemoryFromChanges(Steps.Count - 1)[this.Lines[i].Target.Address];
+                    currStep.Accumulator = currAcc + getMemoryFromChanges(Steps.Count - 1)[Lines[i].Target.Address];
                 }
 
                 else if (currInstruction == "SUB")
                 {
-                    currStep.Accumulator = currAcc - getMemoryFromChanges(Steps.Count - 1)[this.Lines[i].Target.Address];
+                    currStep.Accumulator = currAcc - getMemoryFromChanges(Steps.Count - 1)[Lines[i].Target.Address];
                 }
 
                 else if (currInstruction == "STA")
                 {
-                    currStep.MemoryChange = new int[] { this.Lines[i].Target.Address, currAcc };
-                    currMem[this.Lines[i].Target.Address] = currAcc;
+                    currStep.MemoryChange = new int[] { Lines[i].Target.Address, currAcc };
+                    currMem[Lines[i].Target.Address] = currAcc;
                 }
 
                 else if (currInstruction == "LDA")
                 {
-                    currStep.Accumulator = getMemoryFromChanges(Steps.Count - 1)[this.Lines[i].Target.Address];
+                    currStep.Accumulator = getMemoryFromChanges(Steps.Count - 1)[Lines[i].Target.Address];
                 }
 
                 else if (currInstruction == "BRA" || (currInstruction == "BRZ" && currAcc == 0) || (currInstruction == "BRP" && currAcc >= 0))
                 {
-                    i = this.Lines[i].Target.Address - 1;
+                    i = Lines[i].Target.Address - 1;
                 }
 
                 else if (currInstruction == "INP")
@@ -129,41 +129,41 @@ namespace SmartLMC.SmartLMC
             if (lineParts.Length > 3)
             {
                 MessageBox.Show("Line " + (lineNumber + 1) + " contains more parts than expected. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.ErrorSelection = getErrorSelection(lineNumber);
+                ErrorSelection = getErrorSelection(lineNumber);
                 return null;
             }
 
             if (currInstruction != -1)
             {
-                this.Lines[lineNumber].Instruction = currInstruction;
+                Lines[lineNumber].Instruction = currInstruction;
 
                 if (partNumber + 1 < lineParts.Length)
                 {
                     if (partNumber + 2 < lineParts.Length)
                     {
                         MessageBox.Show("\"" + lineParts[partNumber].ToUpper() + "\" instruction has more attributes than expected. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        this.ErrorSelection = getErrorSelection(lineNumber);
+                        ErrorSelection = getErrorSelection(lineNumber);
                         return null;
                     }
 
                     int address;
                     if (Instruction.TargetRequirements[currInstruction])
                     {
-                        this.Lines[lineNumber].Target = this.Lines[lineNumber].Target == null ? new MemoryAllocation() : this.Lines[lineNumber].Target;
+                        Lines[lineNumber].Target = Lines[lineNumber].Target == null ? new MemoryAllocation() : Lines[lineNumber].Target;
 
                         if (int.TryParse(lineParts[partNumber + 1], out address))
                         {
-                            this.Lines[lineNumber].Target.Address = address;
+                            Lines[lineNumber].Target.Address = address;
                         }
 
                         else
                         {
-                            this.Lines[lineNumber].Target.Name = lineParts[partNumber + 1];
+                            Lines[lineNumber].Target.Name = lineParts[partNumber + 1];
 
                             address = getAddressByName(lineParts[partNumber + 1]);
                             if (address != -1)
                             {
-                                this.Lines[lineNumber].Target.Address = address;
+                                Lines[lineNumber].Target.Address = address;
                             }
                         }
                     }
@@ -171,20 +171,20 @@ namespace SmartLMC.SmartLMC
                     else if (Instruction.Instructions[currInstruction] != "DAT")
                     {
                         MessageBox.Show("\"" + lineParts[partNumber].ToUpper() + "\" instruction has more attributes than expected. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        this.ErrorSelection = getErrorSelection(lineNumber);
+                        ErrorSelection = getErrorSelection(lineNumber);
                         return null;
                     }
 
                     else if (int.TryParse(lineParts[partNumber + 1], out address))
                     {
-                        this.Lines[lineNumber].Target = new MemoryAllocation();
-                        this.Lines[lineNumber].Target.Address = address;
+                        Lines[lineNumber].Target = new MemoryAllocation();
+                        Lines[lineNumber].Target.Address = address;
                     }
 
                     else
                     {
-                        MessageBox.Show("Can't allocate memory for \"" + this.Lines[lineNumber].Name.ToUpper() + "\" label. Invalid memory value: \"" + lineParts[partNumber + 1].ToUpper() + "\". Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        this.ErrorSelection = getErrorSelection(lineNumber);
+                        MessageBox.Show("Can't allocate memory for \"" + Lines[lineNumber].Name.ToUpper() + "\" label. Invalid memory value: \"" + lineParts[partNumber + 1].ToUpper() + "\". Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ErrorSelection = getErrorSelection(lineNumber);
                         return null;
                     }
                 }
@@ -192,16 +192,16 @@ namespace SmartLMC.SmartLMC
                 else if (Instruction.TargetRequirements[currInstruction])
                 {
                     MessageBox.Show("\"" + lineParts[partNumber].ToUpper() + "\" instruction requires a target label or memory address. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    this.ErrorSelection = getErrorSelection(lineNumber);
+                    ErrorSelection = getErrorSelection(lineNumber);
                     return null;
                 }
 
-                return this.Lines[lineNumber];
+                return Lines[lineNumber];
             }
 
             else if (partNumber == 0 && lineParts.Length > 1)
             {
-                this.Lines[lineNumber].Name = lineParts[partNumber];
+                Lines[lineNumber].Name = lineParts[partNumber];
                 setAddressByName(lineParts[partNumber], lineNumber);
                 return evaluateLine(lineNumber, lineParts, partNumber + 1);
             }
@@ -209,14 +209,14 @@ namespace SmartLMC.SmartLMC
             else if (partNumber == 1)
             {
                 MessageBox.Show("\"" + lineParts[0].ToUpper() + "\" (or \"" + lineParts[1].ToUpper() + "\") is not a valid instruction. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.ErrorSelection = getErrorSelection(lineNumber);
+                ErrorSelection = getErrorSelection(lineNumber);
                 return null;
             }
 
             else
             {
                 MessageBox.Show("\"" + lineParts[0].ToUpper() + "\" is not a valid instruction. Please revise the source code! ", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.ErrorSelection = getErrorSelection(lineNumber);
+                ErrorSelection = getErrorSelection(lineNumber);
                 return null;
             }
         }
@@ -227,13 +227,13 @@ namespace SmartLMC.SmartLMC
         }
         #endregion
 
-        #region Subfunctions
+        #region Helper Functions
         int getInstructionByName(string inputText)
         {
             string text = inputText.ToUpper();
-            for (int i = 0; i < SmartLMC.Instruction.Instructions.Length; i++)
+            for (int i = 0; i < Instruction.Instructions.Length; i++)
             {
-                if (SmartLMC.Instruction.Instructions[i] == text)
+                if (Instruction.Instructions[i] == text)
                 {
                     return i;
                 }
@@ -244,14 +244,14 @@ namespace SmartLMC.SmartLMC
 
         int getAddressByName(string name)
         {
-            for (int i = 0; i < this.Lines.Length; i++)
+            for (int i = 0; i < Lines.Length; i++)
             {
-                if (this.Lines[i] == null)
+                if (Lines[i] == null)
                 {
                     break;
                 }
 
-                if (this.Lines[i].Name == name)
+                if (Lines[i].Name == name)
                 {
                     return i;
                 }
@@ -262,42 +262,42 @@ namespace SmartLMC.SmartLMC
 
         void setAddressByName(string name, int address)
         {
-            for (int i = 0; i < this.Lines.Length; i++)
+            for (int i = 0; i < Lines.Length; i++)
             {
-                if (this.Lines[i] == null)
+                if (Lines[i] == null)
                 {
                     break;
                 }
 
-                if (this.Lines[i].Target != null && this.Lines[i].Target.Name == name)
+                if (Lines[i].Target != null && Lines[i].Target.Name == name)
                 {
-                    this.Lines[i].Target.Address = address;
+                    Lines[i].Target.Address = address;
                 }
             }
         }
 
         bool setMemory()
         {
-            this.Memory = new int[100];
+            Memory = new int[100];
 
-            for (int i = 0; i < this.Lines.Length; i++)
+            for (int i = 0; i < Lines.Length; i++)
             {
-                if (this.Lines[i] != null)
+                if (Lines[i] != null)
                 {
-                    this.Memory[i] = Instruction.Codes[this.Lines[i].Instruction];
+                    Memory[i] = Instruction.Codes[Lines[i].Instruction];
 
-                    if (this.Lines[i].Target != null)
+                    if (Lines[i].Target != null)
                     {
-                        if (this.Lines[i].Target.Address == -1)
+                        if (Lines[i].Target.Address == -1)
                         {
-                            MessageBox.Show("There is no memory allocated for \"" + this.Lines[i].Target.Name.ToUpper() + "\" label. Use \"DAT\" instruction to do that! ", "Error (Line " + (i + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            this.ErrorSelection = getErrorSelection(i);
+                            MessageBox.Show("There is no memory allocated for \"" + Lines[i].Target.Name.ToUpper() + "\" label. Use \"DAT\" instruction to do that! ", "Error (Line " + (i + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            ErrorSelection = getErrorSelection(i);
                             return false;
                         }
 
                         else
                         {
-                            this.Memory[i] += this.Lines[i].Target.Address - 1 + (Instruction.Instructions[this.Lines[i].Instruction] == "DAT" ? 1 : 0);
+                            Memory[i] += Lines[i].Target.Address - 1 + (Instruction.Instructions[Lines[i].Instruction] == "DAT" ? 1 : 0);
                         }
                     }
                 }
@@ -308,7 +308,7 @@ namespace SmartLMC.SmartLMC
 
         int[] getErrorSelection(int rowNumber)
         {
-            string[] splittedSource = Form1.sourceCode.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] splittedSource = Form1.SourceCode.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
             int charCount = 0;
             for (int i = 0; i < rowNumber; i++)
             {
@@ -320,15 +320,15 @@ namespace SmartLMC.SmartLMC
 
         public int[] getMemoryFromChanges(int stepNumber)
         {
-            if (this.Steps.Count != 0)
+            if (Steps.Count != 0)
             {
-                int[] memOut = (int[])this.Memory.Clone();
+                int[] memOut = (int[])Memory.Clone();
                 for (int i = 0; i <= stepNumber; i++)
                 {
 
-                    if (this.Steps[i].MemoryChange != null)
+                    if (Steps[i].MemoryChange != null)
                     {
-                        memOut[this.Steps[i].MemoryChange[0]] = this.Steps[i].MemoryChange[1];
+                        memOut[Steps[i].MemoryChange[0]] = Steps[i].MemoryChange[1];
                     }
                 }
 
@@ -337,7 +337,7 @@ namespace SmartLMC.SmartLMC
 
             else
             {
-                return this.Memory;
+                return Memory;
             }
         }
 
@@ -346,9 +346,9 @@ namespace SmartLMC.SmartLMC
             string output = "";
             for (int i = 0; i < stepNumber + 1; i++)
             {
-                if (this.Steps[i].Output != null)
+                if (Steps[i].Output != null)
                 {
-                    output += this.Steps[i].Output + "\r\n";
+                    output += Steps[i].Output + "\r\n";
                 }
             }
 

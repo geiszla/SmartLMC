@@ -9,19 +9,21 @@ namespace SmartLMC
 {
     public partial class Form1 : Form
     {
+        #region Variables
+        public static Code CurrCode;
+        public static string SourceCode;
+
         int selectedRow;
         List<Control> highlightedMemoryBoxes = new List<Control>();
         int highlightedLine = -1;
 
-        public static Code currCode;
-        public static string sourceCode;
-
         int RunStatus = 0;
 
-        Color lightRed = (Color)ColorTranslator.FromHtml("#FF7070");
-        Color lightYellow = (Color)ColorTranslator.FromHtml("#FFF070");
-        Color lightGreen = (Color)ColorTranslator.FromHtml("#69C669");
-        Color lightBlue = (Color)ColorTranslator.FromHtml("#3399ff");
+        Color lightRed = ColorTranslator.FromHtml("#FF7070");
+        Color lightYellow = ColorTranslator.FromHtml("#FFF070");
+        Color lightGreen = ColorTranslator.FromHtml("#69C669");
+        Color lightBlue = ColorTranslator.FromHtml("#3399ff");
+        #endregion
 
         public Form1()
         {
@@ -29,15 +31,15 @@ namespace SmartLMC
         }
 
         #region Events
-        private void Form1_Load(object sender, System.EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
             for (int i = 0; i < 100; i++)
             {
                 int rowNumber = (i) / 10 + 1;
                 int columnNumber = i % 10 + 1;
 
-                memoryGroup.Controls.Add(SmartLMC.Forms.CreateLabel("memoryTitle" + i, i.ToString("00"), new int[2] { columnNumber * 38 - 20, rowNumber * 48 - 20 }));
-                memoryGroup.Controls.Add(SmartLMC.Forms.CreateTextBox("memoryValue" + i, "000", new int[2] { columnNumber * 38 - 25, rowNumber * 48 - 2 }));
+                memoryGroup.Controls.Add(Forms.CreateLabel("memoryTitle" + i, i.ToString("00"),new int[2] { columnNumber * 38 - 20, rowNumber * 48 - 20 }));
+                memoryGroup.Controls.Add(Forms.CreateTextBox("memoryValue" + i, "000", new int[2] { columnNumber * 38 - 25, rowNumber * 48 - 2 }));
             }
 
             selectionColorBox.BackColor = lightBlue;
@@ -74,14 +76,14 @@ namespace SmartLMC
             inputBox.Value = 0;
             outputBox.Text = "";
 
-            sourceCode = sourceTextBox.Text;
-            currCode = new Code(sourceCode);
+            SourceCode = sourceTextBox.Text;
+            CurrCode = new Code(SourceCode);
 
             stepsTable.CurrentCellChanged -= stepsTable_CurrentCellChanged;
             highlightImportant(0, true);
 
             compileButton.Text = "Compiling...";
-            if (currCode.Compile())
+            if (CurrCode.Compile())
             {
                 editButton.Enabled = true;
                 sourceGroup.Enabled = false;
@@ -90,10 +92,10 @@ namespace SmartLMC
                 compileButton.Text = "Recompile ->";
 
                 applyMemory(0);
-                applyProgram(programTable, SmartLMC.Forms.createProgramTable());
+                applyProgram(programTable, Forms.createProgramTable());
                 programTable.Visible = true;
 
-                RunStatus = currCode.Run(0);
+                RunStatus = CurrCode.Run(0);
                 if (RunStatus != 0)
                 {
                     getInput(RunStatus - 1);
@@ -109,7 +111,7 @@ namespace SmartLMC
             {
                 compileButton.Text = "Compile ->";
                 sourceTextBox.Focus();
-                sourceTextBox.Select(currCode.ErrorSelection[0], currCode.ErrorSelection[1]);
+                sourceTextBox.Select(CurrCode.ErrorSelection[0], CurrCode.ErrorSelection[1]);
             }
         }
 
@@ -128,20 +130,20 @@ namespace SmartLMC
             int selectedIndex = stepsTable.CurrentRow.Index;
 
             applyMemory(selectedIndex);
-            accumulatorBox.Text = currCode.Steps[selectedIndex].Accumulator.ToString("000");
-            outputBox.Text = currCode.getOutput(selectedIndex);
+            accumulatorBox.Text = CurrCode.Steps[selectedIndex].Accumulator.ToString("000");
+            outputBox.Text = CurrCode.getOutput(selectedIndex);
 
-            int lineNumber = currCode.Steps[selectedIndex].LineNumber;
+            int lineNumber = CurrCode.Steps[selectedIndex].LineNumber;
 
             counterBox.Text = lineNumber.ToString("00");
-            if (Instruction.Instructions[currCode.Lines[lineNumber].Instruction] != "DAT")
+            if (Instruction.Instructions[CurrCode.Lines[lineNumber].Instruction] != "DAT")
             {
-                MemoryAllocation currTarget = currCode.Lines[lineNumber].Target;
-                addressBox.Text = currTarget != null ? currCode.Lines[lineNumber].Target.Address.ToString("00") : "00";
-                instructionBox.Text = Math.Floor(currCode.getMemoryFromChanges(selectedIndex)[lineNumber] / 100.0).ToString();
+                MemoryAllocation currTarget = CurrCode.Lines[lineNumber].Target;
+                addressBox.Text = currTarget != null ? CurrCode.Lines[lineNumber].Target.Address.ToString("00") : "00";
+                instructionBox.Text = Math.Floor(CurrCode.getMemoryFromChanges(selectedIndex)[lineNumber] / 100.0).ToString();
             }
 
-            programTable.Rows[currCode.Steps[selectedIndex].LineNumber].Selected = true;
+            programTable.Rows[CurrCode.Steps[selectedIndex].LineNumber].Selected = true;
 
             highlightImportant(selectedIndex, false);
             changeSelectedLabel();
@@ -155,8 +157,8 @@ namespace SmartLMC
 
             if (RunStatus != 0)
             {
-                currCode.Steps[RunStatus - 1].Accumulator = Convert.ToInt32(inputBox.Value);
-                RunStatus = currCode.Run(RunStatus);
+                CurrCode.Steps[RunStatus - 1].Accumulator = Convert.ToInt32(inputBox.Value);
+                RunStatus = CurrCode.Run(RunStatus);
             }
 
             inputBox.Enabled = false;
@@ -188,7 +190,7 @@ namespace SmartLMC
                 sourceText[lineNumber - 1] = currCommand;
             }
 
-            sourceTextBox.Text = String.Join("\n", sourceText) + (!lastEmpty ? ("\r\n" + currCommand) : "");
+            sourceTextBox.Text = string.Join("\n", sourceText) + (!lastEmpty ? ("\r\n" + currCommand) : "");
             sourceTextBox.Focus();
             sourceTextBox.Select(sourceTextBox.Text.Length, 0);
         }
@@ -203,15 +205,15 @@ namespace SmartLMC
             }
 
             outputTable.Columns[0].Width = 25;
-            accumulatorBox.Text = currCode.Steps.Count != 0 ? currCode.Steps[currCode.Steps.Count - 1].Accumulator.ToString("000") : "000";
+            accumulatorBox.Text = CurrCode.Steps.Count != 0 ? CurrCode.Steps[CurrCode.Steps.Count - 1].Accumulator.ToString("000") : "000";
         }
 
         void applyMemory(int stepNumber)
         {
-            int[] currMem = currCode.getMemoryFromChanges(stepNumber);
-            for (int i = 0; i < currCode.Memory.Length; i++)
+            int[] currMem = CurrCode.getMemoryFromChanges(stepNumber);
+            for (int i = 0; i < CurrCode.Memory.Length; i++)
             {
-                Control currMemLabel = this.Controls.Find("memoryValue" + i, true)[0];
+                Control currMemLabel = Controls.Find("memoryValue" + i, true)[0];
                 if (currMemLabel.Text != currMem[i].ToString("000"))
                 {
                     currMemLabel.Text = currMem[i].ToString("000");
@@ -223,26 +225,27 @@ namespace SmartLMC
         {
             programTable.CurrentCell = programTable.Rows[programTable.Rows.Count - 1].Cells[0];
 
-            applyProgram(stepsTable, SmartLMC.Forms.createStepsTable());
+            applyProgram(stepsTable, Forms.createStepsTable());
             stepsTable.CurrentCellChanged += stepsTable_CurrentCellChanged;
 
             applyMemory(stepsTable.CurrentCell.RowIndex);
-            stepsTable.CurrentCell = stepsTable.Rows[currCode.Steps.Count - 1].Cells[0];
-            outputBox.Text = currCode.getOutput(stepsTable.CurrentCell.RowIndex);
+            stepsTable.CurrentCell = stepsTable.Rows[CurrCode.Steps.Count - 1].Cells[0];
+            outputBox.Text = CurrCode.getOutput(stepsTable.CurrentCell.RowIndex);
 
             changeSelectedLabel();
-            highlightImportant(currCode.Steps.Count - 1, false);
+            highlightImportant(CurrCode.Steps.Count - 1, false);
             checkForInactiveRows();
         }
 
         public void getInput(int stepNumber)
         {
-            applyProgram(stepsTable, SmartLMC.Forms.createStepsTable());
-            stepsTable.CurrentCell = stepsTable.Rows[currCode.Steps.Count - 1].Cells[0];
-            programTable.CurrentCell = programTable.Rows[currCode.Steps[currCode.Steps.Count - 1].LineNumber].Cells[0];
+            applyProgram(stepsTable, Forms.createStepsTable());
+            stepsTable.CurrentCell = stepsTable.Rows[CurrCode.Steps.Count - 1].Cells[0];
+            programTable.CurrentCell = programTable.Rows[CurrCode.Steps[CurrCode.Steps.Count - 1].LineNumber].Cells[0];
             changeSelectedLabel();
 
-            MessageBox.Show("Please write in a number for \"INP\" instruction (on line " + stepNumber + ") to the input box below.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+            MessageBox.Show("Please write in a number for \"INP\" instruction (on line " + stepNumber + ") to the input box below.", "Input Required",
+                MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
             inputBox.Enabled = true;
             sendButton.Enabled = true;
             inputBox.Focus();
@@ -252,12 +255,12 @@ namespace SmartLMC
         {
             if (stepsTable.CurrentCell != null)
             {
-                int currSelectedRow = currCode.Steps[stepsTable.CurrentCell.RowIndex].LineNumber;
+                int currSelectedRow = CurrCode.Steps[stepsTable.CurrentCell.RowIndex].LineNumber;
 
-                Control previousLabel = this.Controls.Find("memoryTitle" + selectedRow, true)[0];
-                Control previousTextBox = this.Controls.Find("memoryValue" + selectedRow, true)[0];
-                Control currLabel = this.Controls.Find("memoryTitle" + currSelectedRow, true)[0];
-                Control currTextBox = this.Controls.Find("memoryValue" + currSelectedRow, true)[0];
+                Control previousLabel = Controls.Find("memoryTitle" + selectedRow, true)[0];
+                Control previousTextBox = Controls.Find("memoryValue" + selectedRow, true)[0];
+                Control currLabel = Controls.Find("memoryTitle" + currSelectedRow, true)[0];
+                Control currTextBox = Controls.Find("memoryValue" + currSelectedRow, true)[0];
 
                 previousLabel.Font = new Font(currLabel.Font, FontStyle.Regular);
                 currTextBox.ForeColor = Color.Black;
@@ -310,7 +313,7 @@ namespace SmartLMC
 
             if (!removeHighlighting)
             {
-                Line currLine = currCode.Lines[currCode.Steps[selectedIndex].LineNumber];
+                Line currLine = CurrCode.Lines[CurrCode.Steps[selectedIndex].LineNumber];
                 string currInstruction = Instruction.Instructions[currLine.Instruction];
 
                 if (currInstruction == "INP")
@@ -318,7 +321,7 @@ namespace SmartLMC
                     inputBox.BackColor = lightYellow;
                     inputBox.Font = new Font(inputBox.Font, FontStyle.Bold);
 
-                    inputBox.Value = currCode.Steps[selectedIndex].Accumulator;
+                    inputBox.Value = CurrCode.Steps[selectedIndex].Accumulator;
                 }
 
                 else if (currInstruction == "STA")
@@ -339,9 +342,9 @@ namespace SmartLMC
                 }
 
                 // Memory
-                if (currCode.Steps[selectedIndex].MemoryChange != null)
+                if (CurrCode.Steps[selectedIndex].MemoryChange != null)
                 {
-                    Control currMemoryBox = this.Controls.Find("memoryValue" + currCode.Steps[selectedIndex].MemoryChange[0], true)[0];
+                    Control currMemoryBox = Controls.Find("memoryValue" + CurrCode.Steps[selectedIndex].MemoryChange[0], true)[0];
                     highlightedMemoryBoxes.Add(currMemoryBox);
 
                     currMemoryBox.BackColor = lightRed;
@@ -349,7 +352,8 @@ namespace SmartLMC
                 }
 
                 // Output
-                if ((selectedIndex == 0 && currCode.Steps[selectedIndex].Output != null) || (selectedIndex != 0 && currCode.getOutput(selectedIndex) != currCode.getOutput(selectedIndex - 1)))
+                if ((selectedIndex == 0 && CurrCode.Steps[selectedIndex].Output != null)
+                    || (selectedIndex != 0 && CurrCode.getOutput(selectedIndex) != CurrCode.getOutput(selectedIndex - 1)))
                 {
                     outputBox.BackColor = lightRed;
                     outputBox.Font = new Font(outputBox.Font, FontStyle.Bold);
@@ -359,16 +363,16 @@ namespace SmartLMC
                 MemoryAllocation currTarget = currLine.Target;
                 if (currTarget != null)
                 {
-                    Control currMemoryBox = this.Controls.Find("memoryValue" + currTarget.Address, true)[0];
+                    Control currMemoryBox = Controls.Find("memoryValue" + currTarget.Address, true)[0];
 
                     if (currInstruction == "BRA" || currInstruction == "BRZ" || currInstruction == "BRP")
                     {
-                        Control currControl = Controls.Find("memoryValue" + currCode.Steps[selectedIndex].LineNumber, true)[0];
+                        Control currControl = Controls.Find("memoryValue" + CurrCode.Steps[selectedIndex].LineNumber, true)[0];
                         highlightedMemoryBoxes.Add(currControl);
 
                         currControl.BackColor = lightYellow;
 
-                        if (currCode.Steps[selectedIndex + 1].LineNumber == currLine.Target.Address)
+                        if (CurrCode.Steps[selectedIndex + 1].LineNumber == currLine.Target.Address)
                         {
                             highlightedMemoryBoxes.Add(currMemoryBox);
                             currMemoryBox.BackColor = lightGreen;
@@ -389,10 +393,10 @@ namespace SmartLMC
 
         void checkForInactiveRows()
         {
-            for (int i = 0; i < currCode.Lines.Length; i++)
+            for (int i = 0; i < CurrCode.Lines.Length; i++)
             {
                 bool isFound = false;
-                foreach (Step currStep in Form1.currCode.Steps)
+                foreach (Step currStep in CurrCode.Steps)
                 {
                     if (currStep.LineNumber == i)
                     {
@@ -409,11 +413,11 @@ namespace SmartLMC
 
         private void setHelpStrip(int selectedIndex)
         {
-            Step currStep = currCode.Steps[selectedIndex];
-            Line currLine = currCode.Lines[currStep.LineNumber];
+            Step currStep = CurrCode.Steps[selectedIndex];
+            Line currLine = CurrCode.Lines[currStep.LineNumber];
             string currInstruction = Instruction.Instructions[currLine.Instruction];
 
-            int previousAccumulator = selectedIndex > 0 ? currCode.Steps[selectedIndex - 1].Accumulator : 0;
+            int previousAccumulator = selectedIndex > 0 ? CurrCode.Steps[selectedIndex - 1].Accumulator : 0;
 
             int currTarget = 0;
             int targetMemoryValue = 0;
@@ -421,8 +425,8 @@ namespace SmartLMC
             if (currLine.Target != null)
             {
                 currTarget = currLine.Target.Address;
-                targetMemoryValue = currCode.getMemoryFromChanges(selectedIndex)[currTarget];
-                previousMemoryValue = currCode.Memory[currLine.Target.Address];
+                targetMemoryValue = CurrCode.getMemoryFromChanges(selectedIndex)[currTarget];
+                previousMemoryValue = CurrCode.Memory[currLine.Target.Address];
             }
 
             helpStatusLabel.Text = currInstruction + ": ";
@@ -477,7 +481,7 @@ namespace SmartLMC
                 }
 
                 helpStatusLabel.Text += "ets the program counter to the target address \""+ currLine.Target.Address.ToString("00") + "\" "
-                    + "(jumps to the given line). -> "  + (currLine.Target.Address == currCode.Steps[selectedIndex + 1].LineNumber ? "taken" : "not taken");
+                    + "(jumps to the given line). -> "  + (currLine.Target.Address == CurrCode.Steps[selectedIndex + 1].LineNumber ? "taken" : "not taken");
             }
 
             else if (currInstruction == "INP")

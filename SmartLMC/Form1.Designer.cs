@@ -62,8 +62,8 @@
             this.registersGroup = new System.Windows.Forms.GroupBox();
             this.addressBox = new System.Windows.Forms.TextBox();
             this.instructionBox = new System.Windows.Forms.TextBox();
-            this.instructionTitle = new System.Windows.Forms.Label();
             this.addressTitle = new System.Windows.Forms.Label();
+            this.instructionTitle = new System.Windows.Forms.Label();
             this.accumulatorBox = new System.Windows.Forms.TextBox();
             this.counterBox = new System.Windows.Forms.TextBox();
             this.counterLabel = new System.Windows.Forms.Label();
@@ -494,15 +494,6 @@
             this.instructionBox.Text = "0";
             this.instructionBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // instructionTitle
-            // 
-            this.instructionTitle.AutoSize = true;
-            this.instructionTitle.Location = new System.Drawing.Point(15, 73);
-            this.instructionTitle.Name = "instructionTitle";
-            this.instructionTitle.Size = new System.Drawing.Size(98, 13);
-            this.instructionTitle.TabIndex = 5;
-            this.instructionTitle.Text = "Instruction Register";
-            // 
             // addressTitle
             // 
             this.addressTitle.AutoSize = true;
@@ -511,6 +502,15 @@
             this.addressTitle.Size = new System.Drawing.Size(87, 13);
             this.addressTitle.TabIndex = 4;
             this.addressTitle.Text = "Address Register";
+            // 
+            // instructionTitle
+            // 
+            this.instructionTitle.AutoSize = true;
+            this.instructionTitle.Location = new System.Drawing.Point(15, 73);
+            this.instructionTitle.Name = "instructionTitle";
+            this.instructionTitle.Size = new System.Drawing.Size(98, 13);
+            this.instructionTitle.TabIndex = 5;
+            this.instructionTitle.Text = "Instruction Register";
             // 
             // accumulatorBox
             // 
@@ -619,9 +619,9 @@
             // 
             this.helpStatusLabel.Name = "helpStatusLabel";
             this.helpStatusLabel.Padding = new System.Windows.Forms.Padding(10, 5, 0, 5);
-            this.helpStatusLabel.Size = new System.Drawing.Size(422, 25);
-            this.helpStatusLabel.Text = "1. Write in a code -> 2. Click compile -> 3. Select a step to get the details of " +
-    "it";
+            this.helpStatusLabel.Size = new System.Drawing.Size(656, 25);
+            this.helpStatusLabel.Text = "1. Write in a code (or click example to insert an example code) -> 2. Click compi" +
+    "le -> 3. Select a step to get the details of it";
             // 
             // Form1
             // 

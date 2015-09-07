@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace SmartLMC.SmartLMC
@@ -40,9 +39,9 @@ namespace SmartLMC.SmartLMC
             programTable.Columns.Add("#", typeof(string));
             programTable.Columns.Add("Code", typeof(string));
 
-            for (int i = 0; i < Form1.currCode.Lines.Length; i++)
+            for (int i = 0; i < Form1.CurrCode.Lines.Length; i++)
             {
-                programTable.Rows.Add(i.ToString("00"), Form1.currCode.Lines[i].Text);
+                programTable.Rows.Add(i.ToString("00"), Form1.CurrCode.Lines[i].Text);
             }
 
             return programTable;
@@ -55,9 +54,9 @@ namespace SmartLMC.SmartLMC
             programTable.Columns.Add("Line", typeof(string));
             programTable.Columns.Add("Code", typeof(string));
 
-            for (int i = 0; i < Form1.currCode.Steps.Count; i++)
+            for (int i = 0; i < Form1.CurrCode.Steps.Count; i++)
             {
-                programTable.Rows.Add(i.ToString("00"), Form1.currCode.Steps[i].LineNumber.ToString("00"), Form1.currCode.Lines[Form1.currCode.Steps[i].LineNumber].Text);
+                programTable.Rows.Add(i.ToString("00"), Form1.CurrCode.Steps[i].LineNumber.ToString("00"), Form1.CurrCode.Lines[Form1.CurrCode.Steps[i].LineNumber].Text);
             }
 
             return programTable;

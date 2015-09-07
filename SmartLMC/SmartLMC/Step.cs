@@ -10,7 +10,7 @@
 
         public Step(int lineNumber)
         {
-            this.LineNumber = lineNumber;
+            LineNumber = lineNumber;
         }
     }
 }

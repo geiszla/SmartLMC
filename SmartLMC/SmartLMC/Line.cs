@@ -10,7 +10,7 @@
 
         public Line(string source)
         {
-            this.Text = source;
+            Text = source;
         }
     }
 }
