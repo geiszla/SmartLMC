@@ -128,7 +128,8 @@ namespace SmartLMC.SmartLMC
 
             if (lineParts.Length > 3)
             {
-                MessageBox.Show("Line " + (lineNumber + 1) + " contains more parts than expected. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Line " + (lineNumber + 1) + " contains more parts than expected. Please chech the source code!",
+                    "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ErrorSelection = getErrorSelection(lineNumber);
                 return null;
             }
@@ -141,7 +142,8 @@ namespace SmartLMC.SmartLMC
                 {
                     if (partNumber + 2 < lineParts.Length)
                     {
-                        MessageBox.Show("\"" + lineParts[partNumber].ToUpper() + "\" instruction has more attributes than expected. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("\"" + lineParts[partNumber].ToUpper() + "\" instruction has more attributes than expected. Please check the source code!",
+                            "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         ErrorSelection = getErrorSelection(lineNumber);
                         return null;
                     }
@@ -170,7 +172,8 @@ namespace SmartLMC.SmartLMC
 
                     else if (Instruction.Instructions[currInstruction] != "DAT")
                     {
-                        MessageBox.Show("\"" + lineParts[partNumber].ToUpper() + "\" instruction has more attributes than expected. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("\"" + lineParts[partNumber].ToUpper() + "\" instruction has more attributes than expected. Please check the source code!",
+                            "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         ErrorSelection = getErrorSelection(lineNumber);
                         return null;
                     }
@@ -183,7 +186,8 @@ namespace SmartLMC.SmartLMC
 
                     else
                     {
-                        MessageBox.Show("Can't allocate memory for \"" + Lines[lineNumber].Name.ToUpper() + "\" label. Invalid memory value: \"" + lineParts[partNumber + 1].ToUpper() + "\". Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Can't allocate memory for \"" + Lines[lineNumber].Name.ToUpper() + "\" label. Invalid memory value: \"" + lineParts[partNumber + 1].ToUpper()
+                            + "\". Please check the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         ErrorSelection = getErrorSelection(lineNumber);
                         return null;
                     }
@@ -191,7 +195,8 @@ namespace SmartLMC.SmartLMC
 
                 else if (Instruction.TargetRequirements[currInstruction])
                 {
-                    MessageBox.Show("\"" + lineParts[partNumber].ToUpper() + "\" instruction requires a target label or memory address. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("\"" + lineParts[partNumber].ToUpper() + "\" instruction requires a target label or memory address. Please check the source code!",
+                        "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     ErrorSelection = getErrorSelection(lineNumber);
                     return null;
                 }
@@ -208,14 +213,16 @@ namespace SmartLMC.SmartLMC
 
             else if (partNumber == 1)
             {
-                MessageBox.Show("\"" + lineParts[0].ToUpper() + "\" (or \"" + lineParts[1].ToUpper() + "\") is not a valid instruction. Please revise the source code!", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("\"" + lineParts[0].ToUpper() + "\" (or \"" + lineParts[1].ToUpper() + "\") is not a valid instruction. Please check the source code!",
+                    "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ErrorSelection = getErrorSelection(lineNumber);
                 return null;
             }
 
             else
             {
-                MessageBox.Show("\"" + lineParts[0].ToUpper() + "\" is not a valid instruction. Please revise the source code! ", "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("\"" + lineParts[0].ToUpper() + "\" is not a valid instruction. Please check the source code!",
+                    "Error (Line " + (lineNumber + 1) + ")", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ErrorSelection = getErrorSelection(lineNumber);
                 return null;
             }
